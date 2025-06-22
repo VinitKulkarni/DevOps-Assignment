@@ -32,10 +32,3 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-
-      - name: (Optional) Tag and push as "latest"
-        if: github.ref == 'refs/heads/main'
-        run: |
-          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
-          905418074680.dkr.ecr.ap-south-1.amazonaws.com/flask-backend:1.5
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
