@@ -47,6 +47,7 @@ export default function Home() {
         </div>
         <div className="info">
           <p>Backend URL: {process.env.NEXT_PUBLIC_API_URL}</p>
+          <p>build by vinit</p>
         </div>
       </main>
 
