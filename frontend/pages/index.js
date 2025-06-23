@@ -5,7 +5,7 @@ import axios from 'axios';
 export default function Home() {
   const [message, setMessage] = useState('Loading...');
   const [status, setStatus] = useState('');
-  const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://backend:8000";
+  const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
   useEffect(() => {
     const fetchData = async () => {
