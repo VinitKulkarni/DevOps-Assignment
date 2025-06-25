@@ -5,15 +5,15 @@ import axios from 'axios';
 export default function Home() {
   const [message, setMessage] = useState('Loading...');
   const [status, setStatus] = useState('');
-  const BACKEND_URL = "http://127.0.0.1:8000"
+  //const BACKEND_URL = "http://127.0.0.1:8000"
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // First check if backend is healthy
-        // const healthCheck = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/health`);
+        const healthCheck = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/health`);
         // http://backend.service.local:8000
-        const healthCheck = await axios.get(`${BACKEND_URL}/api/health`);
+        //const healthCheck = await axios.get(`${BACKEND_URL}/api/health`);
         
         if (healthCheck.data.status === 'healthy') {
           setStatus('Backend is connected!');
