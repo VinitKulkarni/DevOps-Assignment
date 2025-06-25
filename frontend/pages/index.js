@@ -11,6 +11,9 @@ export default function Home() {
       try {
         // First check if backend is healthy
         const healthCheck = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/health`);
+        // pages/index.js or wherever
+        console.log("Backend URL:", process.env.NEXT_PUBLIC_BACKEND_URL);
+
         
         if (healthCheck.data.status === 'healthy') {
           setStatus('Backend is connected!');
