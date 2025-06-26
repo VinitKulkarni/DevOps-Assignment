@@ -46,7 +46,7 @@ export default function Home() {
           <p>{message}</p>
         </div>
         <div className="info">
-          <p>Backend URL: {http://127.0.0.1/api/health}</p>
+          <p>Backend URL: {process.env.NEXT_PUBLIC_API_URL}</p>
         </div>
       </main>
 
