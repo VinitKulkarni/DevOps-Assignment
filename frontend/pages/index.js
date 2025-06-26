@@ -10,15 +10,12 @@ export default function Home() {
     const fetchData = async () => {
       try {
         // First check if backend is healthy
-        const healthCheck = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/health`);
-        // pages/index.js or wherever
-        console.log("Backend URL:", process.env.NEXT_PUBLIC_BACKEND_URL);
-
+        const healthCheck = await axios.get(`http://127.0.0.1/api/health`);
         
         if (healthCheck.data.status === 'healthy') {
           setStatus('Backend is connected!');
           // Then fetch the message
-          const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/health`);
+          const response = await axios.get(`http://127.0.0.1/api/message`);
           setMessage(response.data.message);
         }
       } catch (error) {
@@ -49,7 +46,7 @@ export default function Home() {
           <p>{message}</p>
         </div>
         <div className="info">
-          <p>Backend URL: {process.env.BACKEND_URL}</p>
+          <p>Backend URL: {http://127.0.0.1/api/health}</p>
         </div>
       </main>
 
