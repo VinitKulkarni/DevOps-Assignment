@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import os
+import uvicorn
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -26,5 +27,5 @@ async def get_message():
     return {"message": "You've successfully integrated the backend!"}
 
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000)
