@@ -5,6 +5,9 @@ on:
     branches:
       - main  # or your desired branch
 
+permissions:
+  contents: write
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -51,3 +54,11 @@ jobs:
           cat terraform_script/terraform.tfvars
           sed -i "s|\(image = .*\/node-frontend:\).*|\1$IMAGE_TAG|" terraform_script/terraform.tfvars
           cat terraform_script/terraform.tfvars
+
+      - name: Commit updated terraform.tfvars
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add terraform_script/terraform.tfvars
+          git commit -m "Update image tag to $IMAGE_TAG" || echo "No changes to commit"
+          git push
