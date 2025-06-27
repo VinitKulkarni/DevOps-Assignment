@@ -44,9 +44,8 @@ jobs:
 
       - name: Update image_name in terraform.tfvars
         run: |
-          NEW_IMAGE="$ECR_REGISTRY/$ECR_REPOSITORY_2:$IMAGE_TAG"
-          echo $NEW_IMAGE
+          echo $IMAGE_TAG
           ls -l terraform_script/
           cat terraform_script/terraform.tfvars
-          sed -i 's|^image =.*|image = "'"$NEW_IMAGE"'"|' terraform_script/terraform.tfvars
-
+          sed -i "s|\(image = .*\/node-frontend:\).*|\1$NEW_TAG|" terraform_script/terraform.tfvars
+          cat terraform_script/terraform.tfvars
