@@ -47,6 +47,8 @@ jobs:
 
       - name: Update frontend_image_tag in terraform.tfvars
         env:
+          ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+          ECR_REPOSITORY_1: ${{ secrets.ECR_REPOSITORY_1 }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
           sed -i "s|\(frontend_image = \).*|frontend_image = \"${ECR_REGISTRY}/${ECR_REPOSITORY_1}:${IMAGE_TAG}\"|" terraform_script/terraform.tfvars
@@ -55,6 +57,8 @@ jobs:
 
       - name: Update backend_image_tag in terraform.tfvars
         env:
+          ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+          ECR_REPOSITORY_1: ${{ secrets.ECR_REPOSITORY_2 }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
           sed -i "s|\(backend_image = \).*|backend_image = \"${ECR_REGISTRY}/${ECR_REPOSITORY_2}:${IMAGE_TAG}\"|" terraform_script/terraform.tfvars
