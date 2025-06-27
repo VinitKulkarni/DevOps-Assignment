@@ -41,3 +41,8 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_2:$IMAGE_TAG -f backend/Dockerfile backend/
           docker push $ECR_REGISTRY/$ECR_REPOSITORY_2:$IMAGE_TAG
+
+
+      - name: Replace image tag in Terraform
+        run: |
+          sed -i "s|$ECR_REGISTRY/$IMAGE_NAME:.*|$ECR_REGISTRY/$IMAGE_NAME:${IMAGE_TAG}|g" terraform/frontend.tf
