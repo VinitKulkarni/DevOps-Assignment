@@ -45,20 +45,36 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_2:$IMAGE_TAG -f backend/Dockerfile backend/
           docker push $ECR_REGISTRY/$ECR_REPOSITORY_2:$IMAGE_TAG
 
-      - name: Update image_name in terraform.tfvars
+      - name: Update frontend_image_tag in terraform.tfvars
         env:
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          echo $IMAGE_TAG
-          ls -l terraform_script/
           cat terraform_script/terraform.tfvars
           sed -i "s|\(frontend_image = .*\/node-frontend:\).*|\1$IMAGE_TAG|" terraform_script/terraform.tfvars
+
+      - name: Update backend_image_tag in terraform.tfvars
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
           cat terraform_script/terraform.tfvars
+          sed -i "s|\(backend_image = .*\/flask-backend:\).*|\1$IMAGE_TAG|" terraform_script/terraform.tfvars
 
       - name: Commit updated terraform.tfvars
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
           git add terraform_script/terraform.tfvars
-          git commit -m "Update image tag to $IMAGE_TAG" || echo "No changes to commit"
+          git commit -m "Updated the image tag"
           git push
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.5.5
+
+      - name: Terraform Init
+        run: terraform -chdir=terraform_script init
+
+      - name: Terraform Plan
+        run: terraform -chdir=terraform_script plan -var-file="terraform.tfvars"
+
+      - name: Terraform Apply
+        run: terraform -chdir=terraform_script apply -auto-approve -var-file="terraform.tfvars" 
