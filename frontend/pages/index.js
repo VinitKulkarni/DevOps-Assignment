@@ -5,6 +5,7 @@ import axios from 'axios';
 export default function Home() {
   const [message, setMessage] = useState('Loading...');
   const [status, setStatus] = useState('');
+  const [apiUrl, setApiUrl] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -13,6 +14,7 @@ export default function Home() {
         //const healthCheck = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/health`);
         const configRes = await axios.get('/api/config');
         const apiUrl = configRes.data.apiUrl;
+        setApiUrl(apiUrl);
 
         const healthCheck = await axios.get(`${apiUrl}/api/health`);
         if (healthCheck.data.status === 'healthy') {
