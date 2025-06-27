@@ -42,7 +42,7 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_2:$IMAGE_TAG -f backend/Dockerfile backend/
           docker push $ECR_REGISTRY/$ECR_REPOSITORY_2:$IMAGE_TAG
 
-      - name: Update image_name in variables.tf
+      - name: Update image_name in terraform.tfvars
         run: |
-          ls -la terraform_script/
-          sed -i 's|^image_name = .*|image_name = "'$ECR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG'"|' terraform_script/terraform.tfvars
+          sed -i 's|^image_name = ".*"|image_name = "'$ECR_REGISTRY/$ECR_REPOSITORY_1:$IMAGE_TAG'"|' terraform/terraform.tfvars
+
