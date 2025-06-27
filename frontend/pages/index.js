@@ -52,7 +52,7 @@ export default function Home() {
         </div>
         <div className="info">
           <p>Backend URL: {apiUrl}</p>
-          <p>build by vinit</p>
+          <p>build by vinit version:1.0</p>
         </div>
       </main>
 
