@@ -49,15 +49,15 @@ jobs:
         env:
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          cat terraform_script/terraform.tfvars
-          sed -i "s|\(frontend_image = .*\/node-frontend:\).*|\1$IMAGE_TAG|" terraform_script/terraform.tfvars
+          sed -i "s|\(frontend_image = \).*|frontend_image = \"${ECR_REGISTRY}/${ECR_REPOSITORY_1}:${IMAGE_TAG}\"|" terraform_script/terraform.tfvars
+
+
 
       - name: Update backend_image_tag in terraform.tfvars
         env:
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          cat terraform_script/terraform.tfvars
-          sed -i "s|\(backend_image = .*\/flask-backend:\).*|\1$IMAGE_TAG|" terraform_script/terraform.tfvars
+          sed -i "s|\(backend_image = \).*|backend_image = \"${ECR_REGISTRY}/${ECR_REPOSITORY_2}:${IMAGE_TAG}\"|" terraform_script/terraform.tfvars
 
       - name: Commit updated terraform.tfvars
         run: |
