@@ -51,7 +51,7 @@ export default function Home() {
           <p>{message}</p>
         </div>
         <div className="info">
-          <p>Backend URL: {process.env.NEXT_PUBLIC_API_URL}</p>
+          <p>Backend URL: {apiUrl}</p>
         </div>
       </main>
 
