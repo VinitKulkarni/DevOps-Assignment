@@ -52,7 +52,7 @@ jobs:
           echo $IMAGE_TAG
           ls -l terraform_script/
           cat terraform_script/terraform.tfvars
-          sed -i "s|\(image = .*\/node-frontend:\).*|\1$IMAGE_TAG|" terraform_script/terraform.tfvars
+          sed -i "s|\(frontend_image = .*\/node-frontend:\).*|\1$IMAGE_TAG|" terraform_script/terraform.tfvars
           cat terraform_script/terraform.tfvars
 
       - name: Commit updated terraform.tfvars
