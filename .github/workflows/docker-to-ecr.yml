@@ -61,6 +61,8 @@ jobs:
 
       - name: Commit updated terraform.tfvars
         run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
           git add terraform_script/terraform.tfvars
           git commit -m "Updated the image tag"
           git push
