@@ -47,3 +47,4 @@ jobs:
         working-directory: terraform_script
         run: |
           sed -i "s|$ECR_REGISTRY/$IMAGE_NAME:.*|$ECR_REGISTRY/$IMAGE_NAME:${IMAGE_TAG}|g" frontend.tf
+          sed -i "s|image = \".*\"|image = \"$ECR_REGISTRY/$IMAGE_NAME:${IMAGE_TAG}\"|" frontend.tf
