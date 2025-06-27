@@ -10,8 +10,11 @@ export default function Home() {
     const fetchData = async () => {
       try {
         // First check if backend is healthy
-        const healthCheck = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/health`);
-        
+        //const healthCheck = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/health`);
+        const configRes = await axios.get('/api/config');
+        const apiUrl = configRes.data.apiUrl;
+
+        const healthCheck = await axios.get(`${apiUrl}/api/health`);
         if (healthCheck.data.status === 'healthy') {
           setStatus('Backend is connected!');
           // Then fetch the message
