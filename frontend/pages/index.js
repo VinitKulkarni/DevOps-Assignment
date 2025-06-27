@@ -20,7 +20,7 @@ export default function Home() {
         if (healthCheck.data.status === 'healthy') {
           setStatus('Backend is connected!');
           // Then fetch the message
-          const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/message`);
+          const response = await axios.get(`${apiUrl}/api/message`);
           setMessage(response.data.message);
         }
       } catch (error) {
