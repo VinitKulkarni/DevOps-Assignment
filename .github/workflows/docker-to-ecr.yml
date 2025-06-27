@@ -44,5 +44,6 @@ jobs:
 
 
       - name: Replace image tag in Terraform
+        working-directory: terraform_script
         run: |
-          sed -i "s|$ECR_REGISTRY/$IMAGE_NAME:.*|$ECR_REGISTRY/$IMAGE_NAME:${IMAGE_TAG}|g" terraform/frontend.tf
+          sed -i "s|$ECR_REGISTRY/$IMAGE_NAME:.*|$ECR_REGISTRY/$IMAGE_NAME:${IMAGE_TAG}|g" frontend.tf
