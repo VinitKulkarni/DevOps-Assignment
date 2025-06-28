@@ -2,8 +2,8 @@
 availability_zone_1 = "ap-south-1a"
 availability_zone_2 = "ap-south-1b"
 
-frontend_image = "905418074680.dkr.ecr.ap-south-1.amazonaws.com/node-frontend:048e09589e065b2a0f110bf4521b533a4ac13d08"
-backend_image = "905418074680.dkr.ecr.ap-south-1.amazonaws.com/flask-backend:048e09589e065b2a0f110bf4521b533a4ac13d08"
+frontend_image = "905418074680.dkr.ecr.ap-south-1.amazonaws.com/node-frontend:8e338430ea8f6b9657737b8307b542726ee8c621"
+backend_image = "905418074680.dkr.ecr.ap-south-1.amazonaws.com/flask-backend:8e338430ea8f6b9657737b8307b542726ee8c621"
 
 vpc_cidr_block            = "10.0.0.0/16"
 publicSubnet1a_cidr_block = "10.0.1.0/24"
