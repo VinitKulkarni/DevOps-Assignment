@@ -26,7 +26,7 @@ jobs:
           cd backend
           pip install -r requirements.txt
           cd test
-          python test_app.py
+          PYTHONPATH=backend python -m unittest discover -s backend/test
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
