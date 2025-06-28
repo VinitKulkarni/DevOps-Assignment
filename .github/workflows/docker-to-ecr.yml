@@ -24,6 +24,8 @@ jobs:
       - name: Run Backend Tests
         run: |
           cd backend
+          python3 -m venv venv
+          source venv/bin/activate
           pip install -r requirements.txt
           pytest test_main.py
 
