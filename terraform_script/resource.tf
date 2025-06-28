@@ -7,15 +7,15 @@ terraform {
   }
 }
 
-#resource "aws_ecr_repository" "flask_repo" {
-#  name                 = "flask-backend"
-#  image_tag_mutability = "MUTABLE"
-#}
+resource "aws_ecr_repository" "flask_repo" {
+  name                 = "flask-backend"
+  image_tag_mutability = "MUTABLE"
+}
 
-#resource "aws_ecr_repository" "node_repo" {
-#  name                 = "node-frontend"
-#  image_tag_mutability = "MUTABLE"
-#}
+resource "aws_ecr_repository" "node_repo" {
+  name                 = "node-frontend"
+  image_tag_mutability = "MUTABLE"
+}
 
 
 # Create a VPC
