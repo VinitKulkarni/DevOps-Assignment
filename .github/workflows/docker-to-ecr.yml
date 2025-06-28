@@ -25,6 +25,7 @@ jobs:
         run: |
           cd backend
           pip install -r requirements.txt
+          cd test
           python test_app.py
 
       - name: Configure AWS credentials
