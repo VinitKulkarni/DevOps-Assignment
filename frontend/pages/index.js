@@ -52,7 +52,7 @@ export default function Home() {
         </div>
         <div className="info">
           <p>Backend URL: {apiUrl}</p>
-          <p>build by vinit Date:28june-01:07pm</p>
+          <p>build by vinit Date:28june-01:41pm</p>
         </div>
       </main>
 
