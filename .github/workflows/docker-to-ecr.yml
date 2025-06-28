@@ -38,14 +38,14 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, tag, and push frontend image to ECR
-        env:
-          ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
-          ECR_REPOSITORY_1: ${{ secrets.ECR_REPOSITORY_1 }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_1:$IMAGE_TAG -f frontend/Dockerfile frontend/
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY_1:$IMAGE_TAG
+      #- name: Build, tag, and push frontend image to ECR
+        #env:
+          #ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+          #ECR_REPOSITORY_1: ${{ secrets.ECR_REPOSITORY_1 }}
+          #IMAGE_TAG: ${{ github.sha }}
+        #run: |
+          #docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_1:$IMAGE_TAG -f frontend/Dockerfile frontend/
+          #docker push $ECR_REGISTRY/$ECR_REPOSITORY_1:$IMAGE_TAG
 
       - name: Build, tag, and push backend image to ECR
         env:
@@ -56,42 +56,42 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_2:$IMAGE_TAG -f backend/Dockerfile backend/
           docker push $ECR_REGISTRY/$ECR_REPOSITORY_2:$IMAGE_TAG
 
-      - name: Update frontend_image_tag in terraform.tfvars
-        env:
-          ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
-          ECR_REPOSITORY_1: ${{ secrets.ECR_REPOSITORY_1 }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          sed -i "s|\(frontend_image = \).*|frontend_image = \"${ECR_REGISTRY}/${ECR_REPOSITORY_1}:${IMAGE_TAG}\"|" terraform_script/terraform.tfvars
+      #- name: Update frontend_image_tag in terraform.tfvars
+        #env:
+          #ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+          #ECR_REPOSITORY_1: ${{ secrets.ECR_REPOSITORY_1 }}
+          #IMAGE_TAG: ${{ github.sha }}
+        #run: |
+          #sed -i "s|\(frontend_image = \).*|frontend_image = \"${ECR_REGISTRY}/${ECR_REPOSITORY_1}:${IMAGE_TAG}\"|" terraform_script/terraform.tfvars
 
 
 
-      - name: Update backend_image_tag in terraform.tfvars
-        env:
-          ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
-          ECR_REPOSITORY_2: ${{ secrets.ECR_REPOSITORY_2 }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          sed -i "s|\(backend_image = \).*|backend_image = \"${ECR_REGISTRY}/${ECR_REPOSITORY_2}:${IMAGE_TAG}\"|" terraform_script/terraform.tfvars
+      #- name: Update backend_image_tag in terraform.tfvars
+        #env:
+          #ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+          #ECR_REPOSITORY_2: ${{ secrets.ECR_REPOSITORY_2 }}
+          #IMAGE_TAG: ${{ github.sha }}
+        #run: |
+          #sed -i "s|\(backend_image = \).*|backend_image = \"${ECR_REGISTRY}/${ECR_REPOSITORY_2}:${IMAGE_TAG}\"|" terraform_script/terraform.tfvars
 
-      - name: Commit updated terraform.tfvars
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add terraform_script/terraform.tfvars
-          git commit -m "Updated the image tag"
-          git push
+      #- name: Commit updated terraform.tfvars
+        #run: |
+          #git config user.name "github-actions"
+          #git config user.email "github-actions@github.com"
+          #git add terraform_script/terraform.tfvars
+          #git commit -m "Updated the image tag"
+          #git push
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.5.5
+      #- name: Setup Terraform
+        #uses: hashicorp/setup-terraform@v3
+        #with:
+          #terraform_version: 1.5.5
 
-      - name: Terraform Init
-        run: terraform -chdir=terraform_script init
+      #- name: Terraform Init
+        #run: terraform -chdir=terraform_script init
 
-      - name: Terraform Plan
-        run: terraform -chdir=terraform_script plan -var-file="terraform.tfvars"
+      #- name: Terraform Plan
+        #run: terraform -chdir=terraform_script plan -var-file="terraform.tfvars"
 
-      - name: Terraform Apply
-        run: terraform -chdir=terraform_script apply -auto-approve -var-file="terraform.tfvars" 
+      #- name: Terraform Apply
+        #run: terraform -chdir=terraform_script apply -auto-approve -var-file="terraform.tfvars" 
