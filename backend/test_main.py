@@ -5,12 +5,13 @@ from app.main import app
 app = FastAPI()
 
 def test_health_check():
-    response = client.get("/api/health")
-    assert response.status_code == 200
-    assert response.json() == {
-        "status": "healthy",
-        "message": "Backend is running successfully"
-    }
+    with TestClient(app) as client:
+        response = client.get("/api/health")
+        assert response.status_code == 200
+        assert response.json() == {
+            "status": "healthy",
+            "message": "Backend is running successfully"
+        }
 
 def test_get_message():
     response = client.get("/api/message")
