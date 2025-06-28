@@ -14,8 +14,9 @@ def test_health_check():
         }
 
 def test_get_message():
-    response = client.get("/api/message")
-    assert response.status_code == 200
-    assert response.json() == {
-        "message": "You've successfully integrated the backend!"
-    }
+    with TestClient(app) as client:
+        response = client.get("/api/message")
+        assert response.status_code == 200
+        assert response.json() == {
+            "message": "You've successfully integrated the backend!"
+        }
