@@ -7,10 +7,20 @@ terraform {
   }
 }
 
+#resource "aws_ecr_repository" "flask_repo" {
+#  name                 = "flask-backend"
+#  image_tag_mutability = "MUTABLE"
+#}
+
+#resource "aws_ecr_repository" "node_repo" {
+#  name                 = "node-frontend"
+#  image_tag_mutability = "MUTABLE"
+#}
+
 
 # Create a VPC
 resource "aws_vpc" "myvpc" {
-  cidr_block           = "10.0.0.0/16"
+  cidr_block           = var.vpc_cidr_block
   enable_dns_support   = true
   enable_dns_hostnames = true
   tags = {
@@ -18,10 +28,11 @@ resource "aws_vpc" "myvpc" {
   }
 }
 
+
 # public subnet-1a
 resource "aws_subnet" "publicSubnet1a" {
   vpc_id                  = aws_vpc.myvpc.id
-  cidr_block              = "10.0.1.0/24"
+  cidr_block              = var.publicSubnet1a_cidr_block
   availability_zone       = "ap-south-1a"
   map_public_ip_on_launch = true
 }
@@ -29,15 +40,17 @@ resource "aws_subnet" "publicSubnet1a" {
 # public subnet-1b
 resource "aws_subnet" "publicSubnet1b" {
   vpc_id                  = aws_vpc.myvpc.id
-  cidr_block              = "10.0.2.0/24"
+  cidr_block              = var.publicSubnet1b_cidr_block
   availability_zone       = "ap-south-1b"
   map_public_ip_on_launch = true
 }
+
 
 # Internet gateway
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.myvpc.id
 }
+
 
 # Public Route Tables
 resource "aws_route_table" "publicRouteTable" {
@@ -49,18 +62,21 @@ resource "aws_route_table" "publicRouteTable" {
   }
 }
 
-# Associate the public subnets with the public route table
+
+# Associate the public subnets-1a with the public route table
 resource "aws_route_table_association" "public_subnet_association1a" {
   subnet_id      = aws_subnet.publicSubnet1a.id
   route_table_id = aws_route_table.publicRouteTable.id
 }
 
+# Associate the public subnets-1b with the public route table
 resource "aws_route_table_association" "public_subnet_association1b" {
   subnet_id      = aws_subnet.publicSubnet1b.id
   route_table_id = aws_route_table.publicRouteTable.id
 }
 
-# Security Group for Load Balancer
+
+# Security Group for Load Balancer for both FE & BE 
 resource "aws_security_group" "load_balancer_security_group" {
   vpc_id = aws_vpc.myvpc.id
 
@@ -78,6 +94,7 @@ resource "aws_security_group" "load_balancer_security_group" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
 
 # Security Group for ECS Services
 resource "aws_security_group" "service_security_group" {
@@ -98,15 +115,16 @@ resource "aws_security_group" "service_security_group" {
   }
 }
 
+
 # ALB for frontend
 resource "aws_alb" "application_load_balancer" {
-  name               = "load-balancer-dev"
+  name               = "frontend-alb"
   load_balancer_type = "application"
   subnets            = [aws_subnet.publicSubnet1a.id, aws_subnet.publicSubnet1b.id]
   security_groups    = [aws_security_group.load_balancer_security_group.id]
 }
 
-# ALB for backend----
+# ALB for backend
 resource "aws_alb" "backend_alb" {
   name               = "backend-alb"
   load_balancer_type = "application"
@@ -114,6 +132,8 @@ resource "aws_alb" "backend_alb" {
   security_groups    = [aws_security_group.load_balancer_security_group.id]
 }
 
+
+# Frontend target group
 resource "aws_lb_target_group" "frontend_tg" {
   name        = "frontend-tg"
   port        = 3000
@@ -122,7 +142,7 @@ resource "aws_lb_target_group" "frontend_tg" {
   vpc_id      = aws_vpc.myvpc.id
 }
 
-#backend tg update------
+# Backend target group
 resource "aws_lb_target_group" "backend_tg" {
   name        = "backend-tg"
   port        = 8000
@@ -132,6 +152,7 @@ resource "aws_lb_target_group" "backend_tg" {
 }
 
 
+# Frontend listener
 resource "aws_lb_listener" "listener" {
   load_balancer_arn = aws_alb.application_load_balancer.arn
   port              = "80"
@@ -143,7 +164,7 @@ resource "aws_lb_listener" "listener" {
   }
 }
 
-#lister update ----
+# Backend listener
 resource "aws_lb_listener" "backend_listener" {
   load_balancer_arn = aws_alb.backend_alb.arn
   port              = "80"
@@ -156,44 +177,18 @@ resource "aws_lb_listener" "backend_listener" {
 }
 
 
-/*
-# Cloud Map DNS namespace
-resource "aws_service_discovery_private_dns_namespace" "private_dns" {
-  name = "test"
-  vpc  = aws_vpc.myvpc.id
-}*/
-
 # ECS Cluster
 resource "aws_ecs_cluster" "my_cluster" {
   name = "app-cluster"
-  /*
-  service_connect_defaults {
-    namespace = aws_service_discovery_private_dns_namespace.private_dns.arn
-  }
-  */
 }
 
-/*
-# Service discovery service for backend
-resource "aws_service_discovery_service" "backend_sd" {
-  name = "backend"
-
-  dns_config {
-    namespace_id   = aws_service_discovery_private_dns_namespace.private_dns.id
-    routing_policy = "MULTIVALUE"
-    dns_records {
-      type = "A"
-      ttl  = 10
-    }
-  }
-
-  health_check_custom_config {
-    failure_threshold = 1
-  }
+resource "aws_cloudwatch_log_group" "ecs_logs" {
+  name              = "/ecs/app"
+  retention_in_days = 7
 }
-*/
 
-# Task Definitions
+
+# Frontend Task Definitions
 resource "aws_ecs_task_definition" "frontend_task" {
   family                   = "frontend-task"
   requires_compatibilities = ["FARGATE"]
@@ -219,10 +214,19 @@ resource "aws_ecs_task_definition" "frontend_task" {
           value = "http://${aws_alb.backend_alb.dns_name}"
         }
       ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.ecs_logs.name
+          awslogs-region        = "ap-south-1"
+          awslogs-stream-prefix = "ecs"
+        }
+      }
     }
   ])
 }
 
+# Backend Task Definition
 resource "aws_ecs_task_definition" "backend_task" {
   family                   = "backend-task"
   requires_compatibilities = ["FARGATE"]
@@ -246,7 +250,8 @@ resource "aws_ecs_task_definition" "backend_task" {
   ])
 }
 
-# ECS Services
+
+# Frontend ECS Services
 resource "aws_ecs_service" "frontend_service" {
   name            = "frontend-service"
   cluster         = aws_ecs_cluster.my_cluster.id
@@ -267,6 +272,7 @@ resource "aws_ecs_service" "frontend_service" {
   }
 }
 
+# Backend ECS Services
 resource "aws_ecs_service" "backend_service" {
   name            = "backend-service"
   cluster         = aws_ecs_cluster.my_cluster.id
@@ -281,14 +287,36 @@ resource "aws_ecs_service" "backend_service" {
     container_port   = 8000
   }
 
-  /*service_registries {
-    registry_arn = aws_service_discovery_service.backend_sd.arn
-    container_name = "backend"
-  }*/
-
   network_configuration {
     subnets          = [aws_subnet.publicSubnet1a.id, aws_subnet.publicSubnet1b.id]
     assign_public_ip = true
     security_groups  = [aws_security_group.service_security_group.id]
   }
+}
+
+
+### Dashboard
+resource "aws_cloudwatch_dashboard" "ecs_dashboard" {
+  dashboard_name = "ecs-metrics-dashboard"
+  dashboard_body = jsonencode({
+    widgets = [
+      {
+        type = "metric"
+        x    = 0
+        y    = 0
+        width = 12
+        height = 6
+        properties = {
+          metrics = [
+            [ "AWS/ECS", "CPUUtilization", "ClusterName", aws_ecs_cluster.my_cluster.name, "ServiceName", aws_ecs_service.frontend_service.name ],
+            [ ".", "MemoryUtilization", ".", ".", ".", "." ],
+          ]
+          view = "timeSeries"
+          stacked = false
+          region = "ap-south-1"
+          title = "CPU and Memory Utilization"
+        }
+      }
+    ]
+  })
 }
